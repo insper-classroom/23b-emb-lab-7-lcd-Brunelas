@@ -12,6 +12,7 @@
 LV_FONT_DECLARE(dseg70); 
 LV_FONT_DECLARE(dseg50);
 LV_FONT_DECLARE(dseg60);
+LV_FONT_DECLARE(dseg20);
 
 /************************************************************************/
 /* LCD / LVGL                                                           */
@@ -28,6 +29,7 @@ static  lv_obj_t * labelBtnRelogio;
 static  lv_obj_t * labelBtnFlechaCima;
 static  lv_obj_t * labelBtnFlechaBaixo;
 lv_obj_t * labelFloor;
+lv_obj_t * labelFloorDecimal;
 lv_obj_t * labelHora;
 lv_obj_t * labelTemp;
 
@@ -232,13 +234,20 @@ void lv_ex_btn_1(void) {
 	 	 lv_obj_set_style_text_font(labelFloor, &dseg70, LV_STATE_DEFAULT);
 	 	 lv_obj_set_style_text_color(labelFloor, lv_color_white(), LV_STATE_DEFAULT);
 	 	 lv_label_set_text_fmt(labelFloor, "%02d", 23);
+	
+	 // Floor decimal 
+		lv_obj_t * labelFloorDecimal = lv_label_create(lv_scr_act());
+		lv_obj_align_to(labelFloorDecimal, labelFloor, LV_ALIGN_OUT_RIGHT_MID, 0, 0); // Alinhe à direita da parte inteira
+		lv_obj_set_style_text_font(labelFloorDecimal, &dseg20, LV_STATE_DEFAULT); // Use uma fonte menor
+		lv_obj_set_style_text_color(labelFloorDecimal, lv_color_white(), LV_STATE_DEFAULT);
+		lv_label_set_text(labelFloorDecimal, ".4");
 	 
 	 // hora
 	 	 lv_obj_t * labelHora = lv_label_create(lv_scr_act());
 	 	 lv_obj_align(labelHora, LV_ALIGN_TOP_RIGHT, 0 , 0);
 	 	 lv_obj_set_style_text_font(labelHora, &dseg50, LV_STATE_DEFAULT);
 	 	 lv_obj_set_style_text_color(labelHora, lv_color_white(), LV_STATE_DEFAULT);
-	 	 lv_label_set_text_fmt(labelHora, "%02d:%02d", 20,30);
+	 	 lv_label_set_text_fmt(labelHora, "%02d:%02d", 20, 30);
 
 
  	 //Temp
