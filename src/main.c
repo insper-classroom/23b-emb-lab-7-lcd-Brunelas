@@ -8,6 +8,11 @@
 #include "lvgl.h"
 #include "touch/touch.h"
 
+// declarando fontes
+LV_FONT_DECLARE(dseg70); 
+LV_FONT_DECLARE(dseg50);
+LV_FONT_DECLARE(dseg60);
+
 /************************************************************************/
 /* LCD / LVGL                                                           */
 /************************************************************************/
@@ -15,8 +20,18 @@
 #define LV_HOR_RES_MAX          (320)
 #define LV_VER_RES_MAX          (240)
 
-/*A static or global variable to store the buffers*/
+/*A static or global variable to store the buffers*/ 
 static lv_disp_draw_buf_t disp_buf;
+static  lv_obj_t * labelBtn1; //Voc�s podem definir o label como vari�vel global, permitindo assim que outra parte do c�digo altera o valor escrito.
+static  lv_obj_t * labelBtnMenu;
+static  lv_obj_t * labelBtnRelogio;
+static  lv_obj_t * labelBtnFlechaCima;
+static  lv_obj_t * labelBtnFlechaBaixo;
+lv_obj_t * labelFloor;
+lv_obj_t * labelHora;
+lv_obj_t * labelTemp;
+
+
 
 /*Static or global buffer(s). The second buffer is optional*/
 static lv_color_t buf_1[LV_HOR_RES_MAX * LV_VER_RES_MAX];
@@ -28,7 +43,7 @@ static lv_indev_drv_t indev_drv;
 /************************************************************************/
 
 #define TASK_LCD_STACK_SIZE                (1024*6/sizeof(portSTACK_TYPE))
-#define TASK_LCD_STACK_PRIORITY            (tskIDLE_PRIORITY)
+#define TASK_LCD_STACK_PRIORITY            (tskIDLE_PRIORITY + 1)
 
 extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,  signed char *pcTaskName);
 extern void vApplicationIdleHook(void);
@@ -64,6 +79,62 @@ static void event_handler(lv_event_t * e) {
 	}
 }
 
+static void event_BtnMenuhandler(lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	if(code == LV_EVENT_CLICKED) {
+		LV_LOG_USER("Clicked");
+	}
+	else if(code == LV_EVENT_VALUE_CHANGED) {
+		LV_LOG_USER("Toggled");
+	}
+}
+
+static void event_handler_RELOGIO(lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+
+	if(code == LV_EVENT_CLICKED) {
+		LV_LOG_USER("Clicked");
+	}
+	else if(code == LV_EVENT_VALUE_CHANGED) {
+		LV_LOG_USER("Toggled");
+	}
+}
+
+static void event_handler_FLECHA_CIMA(lv_event_t * e) {
+lv_event_code_t code = lv_event_get_code(e);
+	char *c;
+	int temp;
+	if(code == LV_EVENT_CLICKED) {
+		LV_LOG_USER("Clicked");
+		c = lv_label_get_text(labelTemp);
+		temp = atoi(c);
+		lv_label_set_text_fmt(labelTemp, "%02d", temp + 1);
+	}
+	else if(code == LV_EVENT_VALUE_CHANGED) {
+		LV_LOG_USER("Toggled");
+	}
+}
+static void event_handler_FLECHA_BAIXO(lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+	char *c;
+	int temp;
+	if(code == LV_EVENT_CLICKED) {
+		LV_LOG_USER("Clicked");
+		c = lv_label_get_text(labelTemp);
+		temp = atoi(c);
+		lv_label_set_text_fmt(labelTemp, "%02d", temp - 1);
+	}
+	else if(code == LV_EVENT_VALUE_CHANGED) {
+		LV_LOG_USER("Toggled");
+	}
+}
+
+/************************************************************************/
+/* lvgl                                                                 */
+/************************************************************************/
+
+
 void lv_ex_btn_1(void) {
 	lv_obj_t * label;
 
@@ -86,6 +157,99 @@ void lv_ex_btn_1(void) {
 	lv_obj_center(label);
 }
 
+
+ void lv_termostato(void) {
+//      lv_obj_t * labelBtn1;
+// 	 lv_obj_t * labelBtnMenu;
+// 	 lv_obj_t * labelFloor;
+
+
+	// estilo da fonte
+	 static lv_style_t style;
+	 lv_style_init(&style);
+	 lv_style_set_bg_color(&style, lv_color_black());
+	 //lv_style_set_border_color(&style, 0);  sem borda
+	 lv_style_set_border_width(&style, 5);
+	 
+	 //Alinhando botao
+     lv_obj_t * btn1 = lv_btn_create(lv_scr_act());
+     lv_obj_add_event_cb(btn1, event_handler, LV_EVENT_ALL, NULL);
+     lv_obj_align(btn1, LV_ALIGN_BOTTOM_LEFT, 0, 0); // aqui que muda a posicao do botao em relacao a tela  
+	 lv_obj_add_style(btn1, &style, 0);// add para o estilo
+	 //lv_obj_set_width(btn1, 60);  lv_obj_set_height(btn1, 60); // mudar tamanho e altura
+     // se eu quisesse alinhar com outra referencia � so colocar ela de segundo argumento dentro da funcao lv_obj_align()
+     labelBtn1 = lv_label_create(btn1);
+     lv_label_set_text(labelBtn1, "[ " LV_SYMBOL_POWER); // so dois argumentos
+     lv_obj_center(labelBtn1);
+	 
+	 //botao Menu
+	 lv_obj_t * btnMenu = lv_btn_create(lv_scr_act());
+	 lv_obj_add_event_cb(btnMenu, event_BtnMenuhandler, LV_EVENT_ALL, NULL);
+	 lv_obj_align_to(btnMenu,btn1,LV_ALIGN_RIGHT_MID, 40, -11);
+	 lv_obj_add_style(btnMenu, &style, 0);// add para o estilo 
+	 
+	 //lv_obj_set_width(btnMenu, 60);  lv_obj_set_height(btnMenu, 60); // mudar tamanho e altura
+	 
+	 labelBtnMenu = lv_label_create(btnMenu);
+	 lv_label_set_text(labelBtnMenu, "| M"); // casa
+	 lv_obj_center(labelBtnMenu);
+
+	 // botao relogio
+	 lv_obj_t * btnRelogio = lv_btn_create(lv_scr_act());
+	 lv_obj_add_event_cb(btnRelogio, event_handler_RELOGIO, LV_EVENT_ALL, NULL);
+	 lv_obj_align_to(btnRelogio,btnMenu,LV_ALIGN_RIGHT_MID, 40, -11);
+	 lv_obj_add_style(btnRelogio, &style, 0);// add para o estilo
+
+	 labelBtnRelogio = lv_label_create(btnRelogio);
+	 lv_label_set_text(labelBtnRelogio,"| " LV_SYMBOL_SETTINGS " ]"); // casa
+	 lv_obj_center(labelBtnRelogio);
+
+	 // botao flecha para cima
+	 lv_obj_t * btnFlechaCima = lv_btn_create(lv_scr_act());
+	 lv_obj_add_event_cb(btnFlechaCima, event_handler_FLECHA_CIMA, LV_EVENT_ALL, NULL);
+	 lv_obj_align(btnFlechaCima,LV_ALIGN_BOTTOM_RIGHT, -80, 0);
+	 lv_obj_add_style(btnFlechaCima, &style, 0);
+
+	 labelBtnFlechaCima = lv_label_create(btnFlechaCima);
+	 lv_label_set_text(labelBtnFlechaCima, "[ "LV_SYMBOL_UP);
+	 lv_obj_center(labelBtnFlechaCima);
+
+	 // botao flecha para baixo
+	 lv_obj_t * btnFlechaBaixo = lv_btn_create(lv_scr_act());
+	 lv_obj_add_event_cb(btnFlechaBaixo, event_handler_FLECHA_BAIXO, LV_EVENT_ALL, NULL);
+	 lv_obj_align(btnFlechaBaixo,LV_ALIGN_BOTTOM_RIGHT, -25, 0);
+	 lv_obj_add_style(btnFlechaBaixo, &style, 0);
+
+	 labelBtnFlechaBaixo = lv_label_create(btnFlechaBaixo);
+	 lv_label_set_text(labelBtnFlechaBaixo,LV_SYMBOL_DOWN" ]");
+	 lv_obj_center(labelBtnFlechaBaixo); 
+	 
+	 
+	 
+	 //Floor
+	 	 labelFloor = lv_label_create(lv_scr_act());
+	 	 lv_obj_align(labelFloor, LV_ALIGN_LEFT_MID, 35 , -45);
+	 	 lv_obj_set_style_text_font(labelFloor, &dseg70, LV_STATE_DEFAULT);
+	 	 lv_obj_set_style_text_color(labelFloor, lv_color_white(), LV_STATE_DEFAULT);
+	 	 lv_label_set_text_fmt(labelFloor, "%02d", 23);
+	 
+	 // hora
+	 	 lv_obj_t * labelHora = lv_label_create(lv_scr_act());
+	 	 lv_obj_align(labelHora, LV_ALIGN_TOP_RIGHT, 0 , 0);
+	 	 lv_obj_set_style_text_font(labelHora, &dseg50, LV_STATE_DEFAULT);
+	 	 lv_obj_set_style_text_color(labelHora, lv_color_white(), LV_STATE_DEFAULT);
+	 	 lv_label_set_text_fmt(labelHora, "%02d:%02d", 20,30);
+
+
+ 	 //Temp
+	 	 lv_obj_t * labelTemp = lv_label_create(lv_scr_act());
+	 	 lv_obj_align(labelTemp, LV_ALIGN_TOP_RIGHT, -15 , 68);
+	 	 lv_obj_set_style_text_font(labelTemp, &dseg60, LV_STATE_DEFAULT);
+	 	 lv_obj_set_style_text_color(labelTemp, lv_color_white(), LV_STATE_DEFAULT);
+	 	 lv_label_set_text_fmt(labelTemp, "%02d°C", 25);
+ }
+	 
+ 
 /************************************************************************/
 /* TASKS                                                                */
 /************************************************************************/
@@ -93,7 +257,8 @@ void lv_ex_btn_1(void) {
 static void task_lcd(void *pvParameters) {
 	int px, py;
 
-	lv_ex_btn_1();
+	
+	lv_termostato();
 
 	for (;;)  {
 		lv_tick_inc(50);
@@ -101,6 +266,7 @@ static void task_lcd(void *pvParameters) {
 		vTaskDelay(50);
 	}
 }
+
 
 /************************************************************************/
 /* configs                                                              */
@@ -193,10 +359,13 @@ int main(void) {
 	configure_touch();
 	configure_lvgl();
 
+
+
 	/* Create task to control oled */
 	if (xTaskCreate(task_lcd, "LCD", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
 		printf("Failed to create lcd task\r\n");
 	}
+	
 	
 	/* Start the scheduler. */
 	vTaskStartScheduler();
