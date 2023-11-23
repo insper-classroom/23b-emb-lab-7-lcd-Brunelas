@@ -105,12 +105,10 @@ static void event_handler_RELOGIO(lv_event_t * e) {
 
 static void event_handler_FLECHA_CIMA(lv_event_t * e) {
 lv_event_code_t code = lv_event_get_code(e);
-	char *c;
-	int temp;
 	if(code == LV_EVENT_CLICKED) {
 		LV_LOG_USER("Clicked");
-		c = lv_label_get_text(labelTemp);
-		temp = atoi(c);
+		char *c = lv_label_get_text(labelTemp);
+		int temp = atoi(c);
 		lv_label_set_text_fmt(labelTemp, "%02d", temp + 1);
 	}
 	else if(code == LV_EVENT_VALUE_CHANGED) {
@@ -119,12 +117,10 @@ lv_event_code_t code = lv_event_get_code(e);
 }
 static void event_handler_FLECHA_BAIXO(lv_event_t * e) {
 	lv_event_code_t code = lv_event_get_code(e);
-	char *c;
-	int temp;
 	if(code == LV_EVENT_CLICKED) {
 		LV_LOG_USER("Clicked");
-		c = lv_label_get_text(labelTemp);
-		temp = atoi(c);
+		char *c = lv_label_get_text(labelTemp);
+		int temp = atoi(c);
 		lv_label_set_text_fmt(labelTemp, "%02d", temp - 1);
 	}
 	else if(code == LV_EVENT_VALUE_CHANGED) {
