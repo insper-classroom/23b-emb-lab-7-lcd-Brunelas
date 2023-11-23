@@ -28,10 +28,10 @@ static  lv_obj_t * labelBtnMenu;
 static  lv_obj_t * labelBtnRelogio;
 static  lv_obj_t * labelBtnFlechaCima;
 static  lv_obj_t * labelBtnFlechaBaixo;
-lv_obj_t * labelFloor;
-lv_obj_t * labelFloorDecimal;
-lv_obj_t * labelHora;
-lv_obj_t * labelTemp;
+//lv_obj_t * labelFloor;
+//lv_obj_t * labelFloorDecimal;
+//lv_obj_t * labelHora;
+//lv_obj_t * labelTemp;
 
 
 
