@@ -343,7 +343,7 @@ void configure_lvgl(void) {
 	lv_indev_drv_init(&indev_drv);
 	indev_drv.type = LV_INDEV_TYPE_POINTER;
 	indev_drv.read_cb = my_input_read;
-	lv_indev_t * my_indev = lv_indev_drv_register(&indev_drv);
+	lv_indev_drv_register(&indev_drv);
 }
 
 /************************************************************************/
